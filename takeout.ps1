@@ -22,9 +22,12 @@ foreach ($file in $fileList) {
 
     Write-Progress -Activity "Moving Files" -Status "Progress: $progressPercentage% ($currentFile/$totalFiles)" -PercentComplete $progressPercentage
 
-    if ($file.Name -notlike "*.json") {
+    if (-not $file.PSIsContainer) {
         Move-Item -Path $file.FullName -Destination $DestinationDirectory -Force
-    }    
+    }
 }
+
+# Delete the source directory and all its contents
+Remove-Item -Path $SourceDirectory -Recurse -Force
 
 Write-Progress -Activity "Moving Files" -Status "Completed" -Completed
