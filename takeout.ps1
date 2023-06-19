@@ -23,11 +23,17 @@ foreach ($file in $fileList) {
     Write-Progress -Activity "Moving Files" -Status "Progress: $progressPercentage% ($currentFile/$totalFiles)" -PercentComplete $progressPercentage
 
     if (-not $file.PSIsContainer) {
-        Move-Item -Path $file.FullName -Destination $DestinationDirectory -Force
+        if ($file.Extension -eq ".zip") {
+            $zipPath = $file.FullName
+            $extractPath = Join-Path -Path $DestinationDirectory -ChildPath $file.BaseName
+
+            Expand-Archive -Path $zipPath -DestinationPath $extractPath -Force
+            Get-ChildItem -Recurse -File -LiteralPath $extractPath | Move-Item -Destination $DestinationDirectory -Force
+            Remove-Item -Path $extractPath -Recurse -Force
+        } else {
+            Move-Item -Path $file.FullName -Destination $DestinationDirectory -Force
+        }
     }
 }
-
-# Delete the source directory and all its contents
-Remove-Item -Path $SourceDirectory -Recurse -Force
 
 Write-Progress -Activity "Moving Files" -Status "Completed" -Completed
