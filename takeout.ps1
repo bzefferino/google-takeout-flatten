@@ -6,7 +6,7 @@ param (
     [string]$DestinationDirectory
 )
 
-$fileList = Get-ChildItem -Recurse -File -LiteralPath $SourceDirectory
+$fileList = Get-ChildItem -Recurse -File -LiteralPath $SourceDirectory -Exclude "*.json"
 
 $totalFiles = $fileList.Count
 $currentFile = 0
